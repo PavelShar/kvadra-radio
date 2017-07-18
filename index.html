@@ -1,0 +1,74 @@
+<html>
+<head>
+
+    <script
+            src="https://code.jquery.com/jquery-3.2.1.min.js"
+            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script>
+
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/css/materialize.min.css">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/js/materialize.min.js"></script>
+
+    <script>
+        //var server = "http://192.168.1.50:3000";
+		var server = ""; //on same server
+        var clientId = -1;
+        function update() {
+            $.ajax({dataType: "json", url: server + "/getState", data: {"clientId": clientId}}).done(function (data) {
+                clientId = data.clientId;
+                $("#songTitle").text(data.song);
+                $("#users").text(data.usersNum);
+                $("#dislikes").text(data.dislikes);
+
+            });
+        }
+
+        function dislike() {
+            $.ajax({dataType: "json", url: server + "/dislike", data: {"clientId": clientId}});
+            update();
+        }
+
+        function changeVolume(e) {
+            $.ajax({dataType: "json", url: server + "/setVolume", data: {"clientId": clientId,
+                "volume": $(this).attr("data-level")}});
+        }
+
+        $(document).ready(function () {
+            $("#dislikeButton").click(dislike);
+            $('.volume').click(changeVolume);
+        });
+
+        update();
+        setInterval(update, 1000);
+    </script>
+</head>
+
+<body>
+<div style="width: 100vw; height: 100vh;" class="valign-wrapper">
+    <div class="container">
+        <div class="row">
+            <div class="col l12">
+                <div class="card blue-grey darken-1">
+                    <div class="card-content white-text">
+                        <span class="card-title">Kvadra NanoRadioController</span>
+                        <p>Песня: <span id="songTitle"></span></p>
+                        <p>Пользователей/против: <span id="users"></span>/<span id="dislikes"></span></p>
+                    </div>
+                    <div class="card-action">
+                        <a href="#" id="dislikeButton">Dislike</a>
+                        <a href="#" class="volume" data-level="0">Тихо</a>
+                        <a href="#" class="volume" data-level="0.5">Полгромкости</a>
+                        <a href="#" class="volume" data-level="1">Полная громкость</a>
+                        <a href="#" class="volume" data-level="0.75">Нормальная громкость</a>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
